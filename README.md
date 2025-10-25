@@ -41,65 +41,76 @@ Các dịch vụ/hệ thống tích hợp: **Auth Service**, **Core Banking**, *
 ## 4) Use Case Diagram (Mermaid)
 
 
-```mermaid
-flowchart TB
-  %% ACTORS
-  CustomerA["Khách hàng A"];
-  CustomerB["Khách hàng B"];
-  Auth["Auth Service"];
-  Core["Core Banking"];
-  Biller["Bill Aggregator/Provider"];
-  PayGW["Payment Gateway"];
-  Noti["Notification Service"];
-  Support["Support/Operator"];
+```plantuml
+@startuml
+' ========== Use Case Diagram (UML Standard with PlantUML) ==========
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
 
-  %% SYSTEM USE CASES
-  subgraph System["Ngân hàng trực tuyến"]
-    UC_Login["UC-Login"];
-    UC_ViewAcct["UC-ViewAccountSummary"];
-    UC_Transfer["UC-Transfer"];
-    UC_ManageBiller["UC-ManageBiller"];
-    UC_QueryBills["UC-QueryBills"];
-    UC_ViewBillDetail["UC-ViewBillDetail"];
-    UC_PayBill["UC-PayBill"];
-    UC_ViewPaymentHist["UC-ViewPaymentHistory"];
-    UC_ConfigAlert["UC-ConfigureAlerts"];
-    UC_DownloadReceipt["UC-DownloadReceipt"];
-  end
+' --- Actors ---
+actor CustomerA as "Khách hàng A"
+actor CustomerB as "Khách hàng B"
+actor Auth as "Auth Service"
+actor CoreBank as "Core Banking"
+actor BillerProv as "Bill Aggregator/Provider"
+actor PaymentGW as "Payment Gateway"
+actor Notify as "Notification Service"
+actor Support as "Support/Operator"
 
-  %% ACTOR -> USE CASE
-  CustomerA --> UC_Login;
-  CustomerB --> UC_Login;
-  CustomerA --> UC_ViewAcct;
-  CustomerB --> UC_ViewAcct;
-  CustomerA --> UC_Transfer;
-  CustomerB --> UC_ManageBiller;
-  CustomerB --> UC_QueryBills;
-  CustomerB --> UC_ViewBillDetail;
-  CustomerB --> UC_PayBill;
-  CustomerB --> UC_ViewPaymentHist;
-  CustomerA --> UC_ViewPaymentHist;
-  CustomerA --> UC_ConfigAlert;
-  CustomerB --> UC_ConfigAlert;
-  CustomerB --> UC_DownloadReceipt;
+' --- System Boundary ---
+rectangle "Ngân hàng trực tuyến" as System {
+usecase UC_Login as "UC-Login"
+usecase UC_ViewAcct as "UC-ViewAccountSummary"
+usecase UC_Transfer as "UC-Transfer"
+usecase UC_ManageBiller as "UC-ManageBiller"
+usecase UC_QueryBills as "UC-QueryBills"
+usecase UC_ViewBillDetail as "UC-ViewBillDetail"
+usecase UC_PayBill as "UC-PayBill"
+usecase UC_ViewPaymentHist as "UC-ViewPaymentHistory"
+usecase UC_ConfigAlert as "UC-ConfigureAlerts"
+usecase UC_DownloadReceipt as "UC-DownloadReceipt"
+}
 
-  %% USE CASE -> EXTERNAL SYSTEMS
-  UC_Login --> Auth;
-  UC_ViewAcct --> Core;
-  UC_Transfer --> Core;
-  UC_QueryBills --> Biller;
-  UC_ViewBillDetail --> Biller;
-  UC_PayBill --> Core;
-  UC_PayBill --> PayGW;
-  UC_PayBill --> Noti;
-  UC_ViewPaymentHist --> Core;
-  UC_DownloadReceipt --> Noti;
+' --- Customer interactions ---
+CustomerA --> UC_Login
+CustomerB --> UC_Login
+CustomerA --> UC_ViewAcct
+CustomerB --> UC_ViewAcct
+CustomerA --> UC_Transfer
+CustomerB --> UC_ManageBiller
+CustomerB --> UC_QueryBills
+CustomerB --> UC_ViewBillDetail
+CustomerB --> UC_PayBill
+CustomerB --> UC_ViewPaymentHist
+CustomerA --> UC_ViewPaymentHist
+CustomerA --> UC_ConfigAlert
+CustomerB --> UC_ConfigAlert
+CustomerB --> UC_DownloadReceipt
 
-  %% SUPPORT CHANNEL
-  Support --- Noti;
+' --- External system collaborations ---
+UC_Login --> Auth
+UC_ViewAcct --> CoreBank
+UC_Transfer --> CoreBank
+UC_QueryBills --> BillerProv
+UC_ViewBillDetail --> BillerProv
+UC_PayBill --> CoreBank
+UC_PayBill --> PaymentGW
+UC_PayBill --> Notify
+UC_ViewPaymentHist --> CoreBank
+UC_DownloadReceipt --> Notify
 
+' --- Relationships between use cases (optional semantics) ---
+' PayBill always generates a receipt
+UC_PayBill .> UC_DownloadReceipt : <<include>>
 
+' ViewBillDetail occurs after QueryBills
+UC_ViewBillDetail .> UC_QueryBills : <<extend>>
 
+' Support/Operator interacts via notifications/trace-soát
+Support --- Notify
+
+@enduml
 ```
 ---
 
