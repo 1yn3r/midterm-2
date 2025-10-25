@@ -44,60 +44,61 @@ Các dịch vụ/hệ thống tích hợp: **Auth Service**, **Core Banking**, *
 
 ```mermaid
 flowchart TB
-  %% Actors
-  CustomerA(["Khách hàng A"]):::actor
-  CustomerB(["Khách hàng B"]):::actor
-  Auth["Auth Service"]:::sys
-  Core["Core Banking"]:::sys
-  Biller["Bill Aggregator/Provider"]:::sys
-  PayGW["Payment Gateway"]:::sys
-  Noti["Notification Service"]:::sys
-  Support["Support/Operator"]:::sys
+  %% ACTORS
+  CustomerA["Khách hàng A"];
+  CustomerB["Khách hàng B"];
+  Auth["Auth Service"];
+  Core["Core Banking"];
+  Biller["Bill Aggregator/Provider"];
+  PayGW["Payment Gateway"];
+  Noti["Notification Service"];
+  Support["Support/Operator"];
 
+  %% SYSTEM USE CASES
   subgraph System["Ngân hàng trực tuyến"]
-    UC_Login([UC-Login (FR1)])
-    UC_ViewAcct([UC-ViewAccountSummary (FR2)])
-    UC_Transfer([UC-Transfer (FR3)])
-    UC_ManageBiller([UC-ManageBiller (FR4)])
-    UC_QueryBills([UC-QueryBills (FR5)])
-    UC_ViewBillDetail([UC-ViewBillDetail (FR6)])
-    UC_PayBill([UC-PayBill (FR7)])
-    UC_ViewPaymentHist([UC-ViewPaymentHistory (FR8)])
-    UC_ConfigAlert([UC-ConfigureAlerts (FR9)])
-    UC_DownloadReceipt([UC-DownloadReceipt (FR10)])
+    UC_Login["UC-Login (FR1)"];
+    UC_ViewAcct["UC-ViewAccountSummary (FR2)"];
+    UC_Transfer["UC-Transfer (FR3)"];
+    UC_ManageBiller["UC-ManageBiller (FR4)"];
+    UC_QueryBills["UC-QueryBills (FR5)"];
+    UC_ViewBillDetail["UC-ViewBillDetail (FR6)"];
+    UC_PayBill["UC-PayBill (FR7)"];
+    UC_ViewPaymentHist["UC-ViewPaymentHistory (FR8)"];
+    UC_ConfigAlert["UC-ConfigureAlerts (FR9)"];
+    UC_DownloadReceipt["UC-DownloadReceipt (FR10)"];
   end
 
-  %% Associations
-  CustomerA --> UC_Login
-  CustomerB --> UC_Login
-  CustomerA --> UC_ViewAcct
-  CustomerB --> UC_ViewAcct
-  CustomerA --> UC_Transfer
-  CustomerB --> UC_ManageBiller
-  CustomerB --> UC_QueryBills
-  CustomerB --> UC_ViewBillDetail
-  CustomerB --> UC_PayBill
-  CustomerB --> UC_ViewPaymentHist
-  CustomerA --> UC_ViewPaymentHist
-  CustomerA --> UC_ConfigAlert
-  CustomerB --> UC_ConfigAlert
-  CustomerB --> UC_DownloadReceipt
+  %% ACTOR -> USE CASE
+  CustomerA --> UC_Login;
+  CustomerB --> UC_Login;
+  CustomerA --> UC_ViewAcct;
+  CustomerB --> UC_ViewAcct;
+  CustomerA --> UC_Transfer;
+  CustomerB --> UC_ManageBiller;
+  CustomerB --> UC_QueryBills;
+  CustomerB --> UC_ViewBillDetail;
+  CustomerB --> UC_PayBill;
+  CustomerB --> UC_ViewPaymentHist;
+  CustomerA --> UC_ViewPaymentHist;
+  CustomerA --> UC_ConfigAlert;
+  CustomerB --> UC_ConfigAlert;
+  CustomerB --> UC_DownloadReceipt;
 
-  %% System collaborations (dotted)
-  UC_Login -.-> Auth
-  UC_ViewAcct -.-> Core
-  UC_Transfer -.-> Core
-  UC_QueryBills -.-> Biller
-  UC_ViewBillDetail -.-> Biller
-  UC_PayBill -.-> Core
-  UC_PayBill -.-> PayGW
-  UC_PayBill -.-> Noti
-  UC_ViewPaymentHist -.-> Core
-  UC_DownloadReceipt -.-> Noti
-  Support --- Noti
+  %% USE CASE -> EXTERNAL SYSTEMS
+  UC_Login --> Auth;
+  UC_ViewAcct --> Core;
+  UC_Transfer --> Core;
+  UC_QueryBills --> Biller;
+  UC_ViewBillDetail --> Biller;
+  UC_PayBill --> Core;
+  UC_PayBill --> PayGW;
+  UC_PayBill --> Noti;
+  UC_ViewPaymentHist --> Core;
+  UC_DownloadReceipt --> Noti;
 
-  classDef actor fill:#fff,stroke:#333,stroke-width:1px,rx:8,ry:8
-  classDef sys fill:#eef6ff,stroke:#1f6feb,stroke-width:1px,rx:8,ry:8
+  %% SUPPORT CHANNEL
+  Support --- Noti;
+
 ```
 ---
 
