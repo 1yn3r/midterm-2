@@ -1,0 +1,90 @@
+@startuml
+' ===== Online Banking Use Case — Portrait (Top→Middle→Bottom) =====
+top to bottom direction
+skinparam linetype ortho
+skinparam packageStyle rectangle
+skinparam usecase {
+  BackgroundColor #FFFFFF
+  BorderColor #222222
+}
+
+' ---------------- ROW 1: TOP — USERS ----------------
+actor Customer as "Khách hàng"
+actor Support  as "Hỗ trợ/Operator"
+
+' (Neo chiều dọc giữa các hàng)
+Customer -[hidden]down-> Support
+
+' ---------------- ROW 2: MIDDLE — SYSTEM ----------------
+rectangle "Ngân hàng trực tuyến" as System {
+
+  ' CỘT TRÁI: TÀI KHOẢN (gọn tên để giảm bề ngang)
+  package "Tài khoản" as ACC {
+    usecase UC_Login           as "Đăng nhập"
+    usecase UC_ViewAcct        as "Tóm tắt TK"
+    usecase UC_Transfer        as "Chuyển tiền"
+    usecase UC_ViewPaymentHist as "Lịch sử TT"
+    usecase UC_ConfigAlert     as "Cảnh báo"
+  }
+
+  ' CỘT PHẢI: HÓA ĐƠN
+  package "Hóa đơn" as BILL {
+    usecase UC_ManageBiller    as "QL nhà CC"
+    usecase UC_QueryBills      as "Tra cứu HĐ"
+    usecase UC_ViewBillDetail  as "Chi tiết HĐ"
+    usecase UC_PayBill         as "Thanh toán HĐ"
+    usecase UC_DownloadReceipt as "Tải biên lai"
+  }
+}
+
+' Neo: USERS -> SYSTEM theo chiều dọc
+Support -[hidden]down-> System
+
+' ---------------- ROW 3: BOTTOM — EXTERNAL SYSTEMS ----------------
+actor PaymentGW  as "Payment Gateway"
+actor BillerProv as "Bill Aggregator/Provider"
+' Nếu IdP hoàn toàn bên ngoài, bật dòng dưới:
+' actor Auth as "Auth/IdP"
+
+' Neo: SYSTEM -> EXTERNAL theo chiều dọc
+System -[hidden]down-> PaymentGW
+PaymentGW -[hidden]down-> BillerProv
+
+' ================= LINKS (đều theo chiều DỌC) =================
+' USERS ↓ SYSTEM
+Customer -down-> UC_Login
+Customer -down-> UC_ViewAcct
+Customer -down-> UC_Transfer
+Customer -down-> UC_ViewPaymentHist
+Customer -down-> UC_ConfigAlert
+Customer -down-> UC_ManageBiller
+Customer -down-> UC_QueryBills
+Customer -down-> UC_ViewBillDetail
+Customer -down-> UC_PayBill
+Customer -down-> UC_DownloadReceipt
+
+Support --- UC_ViewPaymentHist
+
+' SYSTEM ↓ EXTERNAL
+UC_PayBill         -down-> PaymentGW
+UC_ManageBiller    -down-> BillerProv
+UC_QueryBills      -down-> BillerProv
+UC_ViewBillDetail  -down-> BillerProv
+' Nếu Auth/IdP là ngoại vi:
+' UC_Login           -down-> Auth
+
+' QUAN HỆ GIỮA USE CASE (đặt ngắn – cùng hàng, hạn chế chéo)
+UC_ViewBillDetail .> UC_QueryBills : <<extend>>
+UC_PayBill .> UC_DownloadReceipt  : <<include>>
+
+' ===== Tips bố cục: giữ thứ tự dọc ổn định (không vẽ) =====
+UC_Login -[hidden]-> UC_ViewAcct
+UC_ViewAcct -[hidden]-> UC_Transfer
+UC_Transfer -[hidden]-> UC_ViewPaymentHist
+UC_ViewPaymentHist -[hidden]-> UC_ConfigAlert
+
+UC_ManageBiller -[hidden]-> UC_QueryBills
+UC_QueryBills -[hidden]-> UC_ViewBillDetail
+UC_ViewBillDetail -[hidden]-> UC_PayBill
+UC_PayBill -[hidden]-> UC_DownloadReceipt
+@enduml
